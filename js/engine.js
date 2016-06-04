@@ -24,6 +24,10 @@ var Engine = (function(global) {
         canvas = doc.createElement('canvas'),
         ctx = canvas.getContext('2d'),
         lastTime;
+        
+    var lives = 3;
+
+    var score = 0;
 
     canvas.width = 505;
     canvas.height = 606;
@@ -56,7 +60,13 @@ var Engine = (function(global) {
         /* Use the browser's requestAnimationFrame function to call this
          * function again as soon as the browser is able to draw another frame.
          */
-        win.requestAnimationFrame(main);
+        if (lives > 0){
+            win.requestAnimationFrame(main);
+        }
+        else {
+            console.log("game over!");
+            //reset
+        }
     }
 
     /* This function does some initial setup that should only occur once,
@@ -67,6 +77,7 @@ var Engine = (function(global) {
         reset();
         lastTime = Date.now();
         main();
+        updateAllEnemies();
     }
 
     /* This function is called by main (our game loop) and itself calls all
@@ -95,6 +106,11 @@ var Engine = (function(global) {
             enemy.update(dt);
         });
         player.update();
+        items.update();
+        victim.update();
+        //gem.update();
+        //heart.update();
+        //obstacle.update();
     }
 
     /* This function initially draws the "game level", it will then call
@@ -135,6 +151,7 @@ var Engine = (function(global) {
                 ctx.drawImage(Resources.get(rowImages[row]), col * 101, row * 83);
             }
         }
+        ctx.drawImage(Resources.get('images/Selector.png'), 200, 400);
 
         renderEntities();
     }
@@ -152,6 +169,8 @@ var Engine = (function(global) {
         });
 
         player.render();
+        items.render();
+        victim.render();
     }
 
     /* This function does nothing but it could have been a good place to
@@ -161,6 +180,12 @@ var Engine = (function(global) {
     function reset() {
         // noop
     }
+    Player.prototype.reset = function(){
+    this.x = 200;
+    this.y = 400;
+    lives -= 1;
+    };
+
 
     /* Go ahead and load all of the images we know we're going to need to
      * draw our game level. Then set init as the callback method, so that when
@@ -170,8 +195,16 @@ var Engine = (function(global) {
         'images/stone-block.png',
         'images/water-block.png',
         'images/grass-block.png',
+        'images/Rock.png',
+        'images/Selector.png',
+        'images/Key.png',
+        'images/Star.png',
+        'images/Gem Orange.png',
         'images/enemy-bug.png',
-        'images/char-boy.png'
+        'images/char-boy.png',
+        'images/char-cat-girl.png',
+        'images/char-horn-girl.png',
+        'images/char-pink-girl.png'
     ]);
     Resources.onReady(init);
 

@@ -1,34 +1,32 @@
-var startX = 0;
-var startY = 0;
-var wih, 
+var n, 
     numOfBugs,
     numOfStars,
     numOfHearts,
-    numOfGems;
+    numOfGems,
+    allEnemies,
+    enemyRectangle;
 
-//Create random numbers (source: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/random)
-var randomSpeed = function getRandomIntInclusive(min, max) {
+//Create random speed (source: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/random)
+var randomNum = function getRandomIntInclusive(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 };
-var randomHight = function getRandomIntInclusive(min, max){
-    return Math.floor(Math.random()* (max - min + 1)) + min;
-}
+
+var randomHeight = function aa(n){
+    var randomN =  Math.floor(Math.random()* 4);
+    return [68,151,234,317][randomN];
+};
 
 /////////////////Enemies/////////////////
-var bugStartX = 0; 
-var bugStartY = 0; 
 
-
-var Enemy = function(x, y, speed, axis) {
+var Enemy = function() {
     // Variables applied to each of our instances go here,
     // we've provided one for you to get started
 
     //initial location
-    this.x = x;
-    this.y = y;
-
+    this.x = 0;
+    this.y = randomHeight();
     //speed
-    this.speed = speed;
+    this.speed = randomNum(500, 100);
 
     // The image/sprite for our enemies, this uses
     // a helper we've provided to easily load images
@@ -48,26 +46,80 @@ Enemy.prototype.update = function(dt) {
     if(this.x > 500){
         this.reset();
     }
-    //check collision with Player
 };
 // Draw the enemy on the screen, required method for game
 Enemy.prototype.render = function() {
     ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
 };
 
-var enemy1 = new Enemy(0, 68, 100);
-var enemy2 = new Enemy(0, 151, 90);
-var enemy3 = new Enemy(0, 234, 95);
-var enemy4 = new Enemy(0, 317, 70);
-
-var allEnemies = [enemy1, enemy2, enemy3, enemy4];
+function updateAllEnemies(){
+    var numberOfBugs = 4;
+    allEnemies = [];
+    for ( i = 0; i < numberOfBugs; i++){
+        allEnemies.push(new Enemy());
+    }
+}
+updateAllEnemies();
 
 Enemy.prototype.reset = function(){
     this.x = 0;
-    this.y = 70;
-    this.speed = randomSpeed(500, 200);
-
+    this.y = randomHeight();
+    this.speed = randomNum(500, 100);
 };
+
+/////////////////collectible items/////////////////
+var itemList = ["images/Star.png","images/Gem Blue.png", "images/Heart.png"];
+
+var collectHeight = function (n){
+    var num =  Math.floor(Math.random()* 4);
+    return [-15,68,151,234,317][num];
+};
+var collectColumn = function (n){
+    var num =  Math.floor(Math.random()* 4);
+    return [-2,91,200,301, 402][num];
+};
+
+var Items = function(){
+    this.x = collectColumn();
+    this.y = collectHeight();
+    this.sprite = "images/Gem Orange.png";
+};
+
+Items.prototype.update = function(dt){
+    this.x * dt;
+    this.y * dt;
+};
+
+Items.prototype.render = function(){
+    ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+};
+
+var items = new Items();
+
+/////////////////Victim/////////////////
+
+var VictimColumn = function (n){
+    var n =  Math.floor(Math.random()* 4);
+    return [-2,91,200,301, 402][n];
+};
+
+var Victim = function(){
+    this.x = VictimColumn();
+    this.y = -15;
+    this.sprite = "images/char-pink-girl.png";
+};
+
+Victim.prototype.update = function(dt){
+    this.x * dt;
+    this.y * dt;
+};
+
+Victim.prototype.render = function(){
+    ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+};
+
+var victim = new Victim();
+
 
 /////////////////Player/////////////////
 
@@ -90,7 +142,6 @@ Player.prototype.update = function(dt){
     checkCollisions();
 };
 
-
 Player.prototype.render = function (){
   ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
 };
@@ -103,7 +154,6 @@ var checkCollisions = function(){
         this.bottom = this.top + 62;
     };
     function checkCollision(player, obstacle){
-
         return! (player.left > obstacle.right ||
         player.right < obstacle.left ||
         player.top > obstacle.bottom ||
@@ -111,20 +161,28 @@ var checkCollisions = function(){
         );
     }
 
-    ///???
     var playerRectangle = new Rectangle(player.x, player.y);
     // Check collision with enemies
-    for (var i = 0; i<allEnemies.length; i++){
-        var enemyRectangle = new Rectangle(allEnemies[i].x, allEnemies[i].y);
+    for ( i = 0; i<allEnemies.length; i++){
+        enemyRectangle = new Rectangle(allEnemies[i].x, allEnemies[i].y);
         if(checkCollision(playerRectangle, enemyRectangle)){
-            console.log("hello collision!");
             player.reset();
         }
     }
-    if(player.y == -15){
-        player.reset();
+    var victimRectangle = new Rectangle(victim.x, victim.y);
+    if(checkCollision(playerRectangle, victimRectangle)){
+        console.log("yes");
     }
-};  
+    var itemsRectangle = new Rectangle(items.x, items.y);
+    if(checkCollision(playerRectangle, itemsRectangle)){
+        Enemy.prototype.reset();
+    }
+};
+
+var AddScore = function(){
+
+
+};
 
 Player.prototype.handleInput = function(allowedKeys){
     var increaseX = 101;
@@ -155,20 +213,21 @@ Player.prototype.handleInput = function(allowedKeys){
                 this.y += increaseY;
             }
             break;
-    };  
+    }
 };
 
 // Now instantiate your objects.
-// Place all enemy objects in an array called allEnemies
 // Place the player object in a variable called player
 
 var player = new Player(200, 400);
 
+/*
 Player.prototype.reset = function(){
     this.x = 200;
     this.y = 400;
+    lives -= 1;
 };
-
+*/
 // This listens for key presses and sends the keys to your
 // Player.handleInput() method. You don't need to modify this.
 document.addEventListener('keyup', function(e) {
@@ -181,7 +240,3 @@ document.addEventListener('keyup', function(e) {
 
     player.handleInput(allowedKeys[e.keyCode]);
 });
-
-
-// check the Player cannot move off screen
-// reset handler
