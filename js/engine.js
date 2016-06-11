@@ -25,9 +25,9 @@ var Engine = (function(global) {
         ctx = canvas.getContext('2d'),
         lastTime;
         
-    var lives = 3;
+    lives = 3;
 
-    var score = 0;
+    score = 0;
 
     canvas.width = 505;
     canvas.height = 606;
@@ -78,6 +78,8 @@ var Engine = (function(global) {
         lastTime = Date.now();
         main();
         updateAllEnemies();
+        document.getElementById("livesleft").innerHTML = lives.toString();
+        document.getElementById("score").innerHTML = score.toString();
     }
 
     /* This function is called by main (our game loop) and itself calls all
@@ -91,6 +93,7 @@ var Engine = (function(global) {
      */
     function update(dt) {
         updateEntities(dt);
+        //console.log(lives);
         // checkCollisions();
     }
 
@@ -184,7 +187,21 @@ var Engine = (function(global) {
     this.x = 200;
     this.y = 400;
     lives -= 1;
+    document.getElementById("livesleft").innerHTML = lives.toString();
+    // when the heart is done, show "Game Over!"
     };
+    
+    Enemy.prototype.reset = function(){
+    this.x = 0;
+    this.y = randomHeight();
+    this.speed = randomNum(500, 100);
+    };
+    
+    Items.prototype.reset = function(){
+    randomItem();
+    console.log("success");
+    };
+
 
 
     /* Go ahead and load all of the images we know we're going to need to
@@ -199,7 +216,8 @@ var Engine = (function(global) {
         'images/Selector.png',
         'images/Key.png',
         'images/Star.png',
-        'images/Gem Orange.png',
+        'images/Gem Blue.png',
+        'images/Heart.png',
         'images/enemy-bug.png',
         'images/char-boy.png',
         'images/char-cat-girl.png',

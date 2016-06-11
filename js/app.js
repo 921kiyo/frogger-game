@@ -1,17 +1,18 @@
 var n, 
     numOfBugs,
-    numOfStars,
-    numOfHearts,
-    numOfGems,
     allEnemies,
-    enemyRectangle;
+    lives,
+    score,
+    enemyRectangle,
+    randomItem,
+    Items;
 
 //Create random speed (source: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/random)
 var randomNum = function getRandomIntInclusive(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 };
 
-var randomHeight = function aa(n){
+var randomHeight = function (){
     var randomN =  Math.floor(Math.random()* 4);
     return [68,151,234,317][randomN];
 };
@@ -61,28 +62,28 @@ function updateAllEnemies(){
 }
 updateAllEnemies();
 
-Enemy.prototype.reset = function(){
-    this.x = 0;
-    this.y = randomHeight();
-    this.speed = randomNum(500, 100);
+/////////////////collective items/////////////////
+
+//Randomly select an item to be shown on the screen
+randomItem = function(){
+    var num = Math.floor(Math.random()*3);
+    return ["images/Star.png","images/Gem Blue.png", "images/Heart.png"][num];
 };
 
-/////////////////collectible items/////////////////
-var itemList = ["images/Star.png","images/Gem Blue.png", "images/Heart.png"];
-
-var collectHeight = function (n){
+var collectHeight = function (){
     var num =  Math.floor(Math.random()* 4);
     return [-15,68,151,234,317][num];
 };
-var collectColumn = function (n){
+var collectColumn = function (){
     var num =  Math.floor(Math.random()* 4);
     return [-2,91,200,301, 402][num];
 };
 
-var Items = function(){
+//show the collective item randomly on the screen
+Items = function(){
     this.x = collectColumn();
     this.y = collectHeight();
-    this.sprite = "images/Gem Orange.png";
+    this.sprite = randomItem();
 };
 
 Items.prototype.update = function(dt){
@@ -95,6 +96,9 @@ Items.prototype.render = function(){
 };
 
 var items = new Items();
+
+/////////////////Heart/////////////////
+
 
 /////////////////Victim/////////////////
 
@@ -171,14 +175,34 @@ var checkCollisions = function(){
     }
     var victimRectangle = new Rectangle(victim.x, victim.y);
     if(checkCollision(playerRectangle, victimRectangle)){
-        console.log("yes");
+        console.log("victim!");
     }
     var itemsRectangle = new Rectangle(items.x, items.y);
     if(checkCollision(playerRectangle, itemsRectangle)){
-        Enemy.prototype.reset();
+        //Enemy.prototype.reset();
+        if(items.sprite == "images/Heart.png" ){
+            console.log("heart!");
+            lives += 1;
+            document.getElementById("livesleft").innerHTML = lives.toString();
+            items.reset();
+            
+        }
+        else if(items.sprite == "images/Star.png" ){
+            console.log("Star!");
+            items.reset();
+            score += 100;
+            document.getElementById("score").innerHTML = score.toString();
+        }
+        else if(items.sprite == "images/Gem Blue.png" ){
+            console.log("Gem!");
+            items.reset();
+            score += 10;
+            document.getElementById("score").innerHTML = score.toString();
+        }
+        else {console.log("fail")}
     }
 };
-
+//return ["images/Star.png","images/Gem Blue.png", "images/Heart.png"][num];
 var AddScore = function(){
 
 
@@ -221,13 +245,7 @@ Player.prototype.handleInput = function(allowedKeys){
 
 var player = new Player(200, 400);
 
-/*
-Player.prototype.reset = function(){
-    this.x = 200;
-    this.y = 400;
-    lives -= 1;
-};
-*/
+
 // This listens for key presses and sends the keys to your
 // Player.handleInput() method. You don't need to modify this.
 document.addEventListener('keyup', function(e) {
