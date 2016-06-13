@@ -1,3 +1,22 @@
 body {
     text-align: center;
+    margin: 0 auto;
+    font-family: 'Oswald', arial, sans-serif;
+}
+span {
+    font-size: 30px;
+}
+.life {
+    float: right;
+    text-align: center;
+    width: 20%;
+}
+.score {
+    float: left;
+    text-align: center;
+    width: 20%;
+}
+#livesleft,
+#score {
+    text-align: center;
 }

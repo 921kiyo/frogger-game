@@ -13,7 +13,6 @@
  * the canvas' context (ctx) object globally available to make writing app.js
  * a little simpler to work with.
  */
-
 var Engine = (function(global) {
     /* Predefine the variables we'll be using within this scope,
      * create the canvas element, grab the 2D context for that canvas
@@ -24,7 +23,7 @@ var Engine = (function(global) {
         canvas = doc.createElement('canvas'),
         ctx = canvas.getContext('2d'),
         lastTime;
-        
+
     lives = 3;
 
     score = 0;
@@ -60,12 +59,15 @@ var Engine = (function(global) {
         /* Use the browser's requestAnimationFrame function to call this
          * function again as soon as the browser is able to draw another frame.
          */
-        if (lives > 0){
+
+        //Check the player has a life remain.
+        if (lives > 0) {
             win.requestAnimationFrame(main);
         }
+        //If life is zero, show the message "GAME OVER".
         else {
-            console.log("game over!");
-            //reset
+            text = "GAME OVER. Refresh the page to start over.";
+            document.getElementById("title").innerHTML = text.toString();
         }
     }
 
@@ -93,7 +95,6 @@ var Engine = (function(global) {
      */
     function update(dt) {
         updateEntities(dt);
-        //console.log(lives);
         // checkCollisions();
     }
 
@@ -110,7 +111,7 @@ var Engine = (function(global) {
         });
         player.update();
         items.update();
-        victim.update();
+        //victim.update();
         //gem.update();
         //heart.update();
         //obstacle.update();
@@ -127,12 +128,12 @@ var Engine = (function(global) {
          * for that particular row of the game level.
          */
         var rowImages = [
-                'images/water-block.png',   // Top row is water
-                'images/stone-block.png',   // Row 1 of 3 of stone
-                'images/stone-block.png',   // Row 2 of 3 of stone
-                'images/stone-block.png',   // Row 3 of 3 of stone
-                'images/stone-block.png',   // Row 1 of 2 of stone
-                'images/grass-block.png'    // Row 2 of 2 of grass
+                'images/water-block.png', // Top row is water
+                'images/stone-block.png', // Row 1 of 3 of stone
+                'images/stone-block.png', // Row 2 of 3 of stone
+                'images/stone-block.png', // Row 3 of 3 of stone
+                'images/stone-block.png', // Row 1 of 2 of stone
+                'images/grass-block.png' // Row 2 of 2 of grass
             ],
             numRows = 6,
             numCols = 5,
@@ -173,7 +174,7 @@ var Engine = (function(global) {
 
         player.render();
         items.render();
-        victim.render();
+        //victim.render();
     }
 
     /* This function does nothing but it could have been a good place to
@@ -183,26 +184,26 @@ var Engine = (function(global) {
     function reset() {
         // noop
     }
-    Player.prototype.reset = function(){
-    this.x = 200;
-    this.y = 400;
-    lives -= 1;
-    document.getElementById("livesleft").innerHTML = lives.toString();
-    // when the heart is done, show "Game Over!"
-    };
-    
-    Enemy.prototype.reset = function(){
-    this.x = 0;
-    this.y = randomHeight();
-    this.speed = randomNum(500, 100);
-    };
-    
-    Items.prototype.reset = function(){
-    randomItem();
-    console.log("success");
+    Player.prototype.reset = function() {
+        this.x = 200;
+        this.y = 400;
+        lives -= 1;
+        document.getElementById("livesleft").innerHTML = lives.toString();
+        // when the heart is done, show "Game Over!"
     };
 
+    Enemy.prototype.reset = function() {
+        this.x = 0;
+        this.y = randomHeight();
+        this.speed = randomNum(500, 100);
+    };
 
+    Items.prototype.reset = function() {
+        //randomItem();
+        this.x = collectColumn();
+        this.y = collectHeight();
+        this.sprite = randomItem();
+    };
 
     /* Go ahead and load all of the images we know we're going to need to
      * draw our game level. Then set init as the callback method, so that when
@@ -212,16 +213,16 @@ var Engine = (function(global) {
         'images/stone-block.png',
         'images/water-block.png',
         'images/grass-block.png',
-        'images/Rock.png',
+        //'images/Rock.png',
         'images/Selector.png',
-        'images/Key.png',
+        //'images/Key.png',
         'images/Star.png',
         'images/Gem Blue.png',
         'images/Heart.png',
         'images/enemy-bug.png',
         'images/char-boy.png',
-        'images/char-cat-girl.png',
-        'images/char-horn-girl.png',
+        //'images/char-cat-girl.png',
+        //'images/char-horn-girl.png',
         'images/char-pink-girl.png'
     ]);
     Resources.onReady(init);

@@ -1,20 +1,19 @@
-var n, 
-    numOfBugs,
-    allEnemies,
+var allEnemies,
     lives,
     score,
     enemyRectangle,
     randomItem,
+    text,
     Items;
 
-//Create random speed (source: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/random)
+//Create random speed and height (source: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/random)
 var randomNum = function getRandomIntInclusive(min, max) {
-  return Math.floor(Math.random() * (max - min + 1)) + min;
+    return Math.floor(Math.random() * (max - min + 1)) + min;
 };
 
-var randomHeight = function (){
-    var randomN =  Math.floor(Math.random()* 4);
-    return [68,151,234,317][randomN];
+var randomHeight = function() {
+    var randomN = Math.floor(Math.random() * 4);
+    return [68, 151, 234, 317][randomN];
 };
 
 /////////////////Enemies/////////////////
@@ -44,7 +43,7 @@ Enemy.prototype.update = function(dt) {
     var delta = this.speed * dt;
     this.x += delta;
 
-    if(this.x > 500){
+    if (this.x > 500) {
         this.reset();
     }
 };
@@ -53,10 +52,10 @@ Enemy.prototype.render = function() {
     ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
 };
 
-function updateAllEnemies(){
+function updateAllEnemies() {
     var numberOfBugs = 4;
     allEnemies = [];
-    for ( i = 0; i < numberOfBugs; i++){
+    for (i = 0; i < numberOfBugs; i++) {
         allEnemies.push(new Enemy());
     }
 }
@@ -65,43 +64,41 @@ updateAllEnemies();
 /////////////////collective items/////////////////
 
 //Randomly select an item to be shown on the screen
-randomItem = function(){
-    var num = Math.floor(Math.random()*3);
-    return ["images/Star.png","images/Gem Blue.png", "images/Heart.png"][num];
+randomItem = function() {
+    var num = Math.floor(Math.random() * 3);
+    return ["images/Star.png", "images/Gem Blue.png", "images/Heart.png"][num];
 };
 
-var collectHeight = function (){
-    var num =  Math.floor(Math.random()* 4);
-    return [-15,68,151,234,317][num];
+var collectHeight = function() {
+    var num = Math.floor(Math.random() * 4);
+    return [68, 151, 234, 317][num];
 };
-var collectColumn = function (){
-    var num =  Math.floor(Math.random()* 4);
-    return [-2,91,200,301, 402][num];
+var collectColumn = function() {
+    var num = Math.floor(Math.random() * 4);
+    return [-2, 91, 200, 301, 402][num];
 };
 
-//show the collective item randomly on the screen
-Items = function(){
+//show the randomly selected collective item on the screen
+Items = function() {
     this.x = collectColumn();
     this.y = collectHeight();
     this.sprite = randomItem();
 };
 
-Items.prototype.update = function(dt){
+Items.prototype.update = function(dt) {
     this.x * dt;
     this.y * dt;
 };
 
-Items.prototype.render = function(){
+Items.prototype.render = function() {
     ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
 };
 
 var items = new Items();
 
-/////////////////Heart/////////////////
-
-
 /////////////////Victim/////////////////
-
+// Will try this part another time for update.
+/*
 var VictimColumn = function (n){
     var n =  Math.floor(Math.random()* 4);
     return [-2,91,200,301, 402][n];
@@ -124,13 +121,13 @@ Victim.prototype.render = function(){
 
 var victim = new Victim();
 
-
+*/
 /////////////////Player/////////////////
 
 // Now write your own player class
 // This class requires an update(), render() and
 // a handleInput() method.
-var Player = function(x, y){
+var Player = function(x, y) {
     //setting the player's initial location
     this.x = x;
     this.y = y;
@@ -139,101 +136,97 @@ var Player = function(x, y){
 };
 
 //var player = new Player (startX, startY);
-Player.prototype.update = function(dt){
+Player.prototype.update = function(dt) {
     //Update Player location
     this.x * dt;
     this.y * dt;
     checkCollisions();
 };
 
-Player.prototype.render = function (){
-  ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+Player.prototype.render = function() {
+    ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
 };
 
-var checkCollisions = function(){
-    var Rectangle = function(left, top){
+var checkCollisions = function() {
+    var Rectangle = function(left, top) {
         this.left = left + 35;
         this.top = top + 20;
         this.right = this.left + 65;
         this.bottom = this.top + 62;
     };
-    function checkCollision(player, obstacle){
-        return! (player.left > obstacle.right ||
-        player.right < obstacle.left ||
-        player.top > obstacle.bottom ||
-        player.bottom < obstacle.top
+
+    function checkCollision(player, obstacle) {
+        return !(player.left > obstacle.right ||
+            player.right < obstacle.left ||
+            player.top > obstacle.bottom ||
+            player.bottom < obstacle.top
         );
     }
 
     var playerRectangle = new Rectangle(player.x, player.y);
     // Check collision with enemies
-    for ( i = 0; i<allEnemies.length; i++){
+    for (i = 0; i < allEnemies.length; i++) {
         enemyRectangle = new Rectangle(allEnemies[i].x, allEnemies[i].y);
-        if(checkCollision(playerRectangle, enemyRectangle)){
+        if (checkCollision(playerRectangle, enemyRectangle)) {
             player.reset();
         }
     }
+    /*
     var victimRectangle = new Rectangle(victim.x, victim.y);
     if(checkCollision(playerRectangle, victimRectangle)){
         console.log("victim!");
     }
+    */
     var itemsRectangle = new Rectangle(items.x, items.y);
-    if(checkCollision(playerRectangle, itemsRectangle)){
+    if (checkCollision(playerRectangle, itemsRectangle)) {
         //Enemy.prototype.reset();
-        if(items.sprite == "images/Heart.png" ){
+        if (items.sprite == "images/Heart.png") {
             console.log("heart!");
             lives += 1;
             document.getElementById("livesleft").innerHTML = lives.toString();
             items.reset();
-            
-        }
-        else if(items.sprite == "images/Star.png" ){
+
+        } else if (items.sprite == "images/Star.png") {
             console.log("Star!");
             items.reset();
             score += 100;
             document.getElementById("score").innerHTML = score.toString();
-        }
-        else if(items.sprite == "images/Gem Blue.png" ){
+        } else if (items.sprite == "images/Gem Blue.png") {
             console.log("Gem!");
             items.reset();
             score += 10;
             document.getElementById("score").innerHTML = score.toString();
+        } else {
+            console.log("fail");
         }
-        else {console.log("fail")}
     }
 };
-//return ["images/Star.png","images/Gem Blue.png", "images/Heart.png"][num];
-var AddScore = function(){
 
-
-};
-
-Player.prototype.handleInput = function(allowedKeys){
+Player.prototype.handleInput = function(allowedKeys) {
     var increaseX = 101;
     var increaseY = 83;
 
-    switch(allowedKeys){
+    switch (allowedKeys) {
         case "left":
-            if (this.x > 0){
+            if (this.x > 0) {
                 this.x -= increaseX;
             }
             break;
 
         case "up":
-            if (this.y > 0){
+            if (this.y > 0) {
                 this.y -= increaseY;
             }
             break;
 
         case "right":
-        // need to fix this
-            if (this.x < 402){
+            if (this.x < 402) {
                 this.x += increaseX;
             }
             break;
 
         case "down":
-            if (this.y < 400){
+            if (this.y < 400) {
                 this.y += increaseY;
             }
             break;
