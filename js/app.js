@@ -10,9 +10,9 @@ var allEnemies,
 
 //Render superclass
 
-var Character = function() {
-    ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
-};
+//var Character = function() {
+//    ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+//};
 /////////////////Enemies/////////////////
 
 var Enemy = function() {
@@ -54,7 +54,10 @@ Enemy.prototype.update = function(dt) {
     }
 };
 // Draw the enemy on the screen, required method for game
-Enemy.prototype.render = Character();
+Enemy.prototype.render = function() {
+    ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+};
+
 
 function updateAllEnemies() {
     var numberOfBugs = 4;
@@ -90,7 +93,10 @@ Items.prototype.collectColumn = function() {
     return [-2, 91, 200, 301, 402][num];
 };
 
-Items.prototype.render = Character();
+Items.prototype.render = function() {
+    ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+};
+
 
 var items = new Items();
 
@@ -139,7 +145,10 @@ Player.prototype.update = function(dt) {
     this.checkCollisions();
 };
 
-Player.prototype.render = Character();
+Player.prototype.render = function() {
+    ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+};
+
 
 Player.prototype.checkCollisions = function() {
     var Rectangle = function(left, top) {
