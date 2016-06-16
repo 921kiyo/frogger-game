@@ -110,7 +110,7 @@ var Engine = (function(global) {
             enemy.update(dt);
         });
         player.update();
-        items.update();
+        //items.update();
         //victim.update();
         //gem.update();
         //heart.update();
@@ -194,14 +194,14 @@ var Engine = (function(global) {
 
     Enemy.prototype.reset = function() {
         this.x = 0;
-        this.y = randomHeight();
-        this.speed = randomNum(500, 100);
+        this.y = this.randomHeight();
+        this.speed = this.randomNum(500, 100);
     };
 
     Items.prototype.reset = function() {
         //randomItem();
-        this.x = collectColumn();
-        this.y = collectHeight();
+        this.x = this.collectColumn();
+        this.y = this.collectHeight();
         this.sprite = randomItem();
     };
 

@@ -7,15 +7,12 @@ var allEnemies,
     Items;
 
 //Create random speed and height (source: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/random)
-var randomNum = function getRandomIntInclusive(min, max) {
-    return Math.floor(Math.random() * (max - min + 1)) + min;
-};
 
-var randomHeight = function() {
-    var randomN = Math.floor(Math.random() * 4);
-    return [68, 151, 234, 317][randomN];
-};
+//Render superclass
 
+var Character = function() {
+    ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+};
 /////////////////Enemies/////////////////
 
 var Enemy = function() {
@@ -24,13 +21,22 @@ var Enemy = function() {
 
     //initial location
     this.x = 0;
-    this.y = randomHeight();
+    this.y = this.randomHeight();
     //speed
-    this.speed = randomNum(500, 100);
+    this.speed = this.randomNum(500, 100);
 
     // The image/sprite for our enemies, this uses
     // a helper we've provided to easily load images
     this.sprite = 'images/enemy-bug.png';
+};
+
+Enemy.prototype.randomHeight = function() {
+    var randomN = Math.floor(Math.random() * 4);
+    return [68, 151, 234, 317][randomN];
+};
+
+Enemy.prototype.randomNum = function getRandomIntInclusive(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
 };
 
 // Update the enemy's position, required method for game
@@ -48,9 +54,7 @@ Enemy.prototype.update = function(dt) {
     }
 };
 // Draw the enemy on the screen, required method for game
-Enemy.prototype.render = function() {
-    ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
-};
+Enemy.prototype.render = Character();
 
 function updateAllEnemies() {
     var numberOfBugs = 4;
@@ -69,30 +73,24 @@ randomItem = function() {
     return ["images/Star.png", "images/Gem Blue.png", "images/Heart.png"][num];
 };
 
-var collectHeight = function() {
+//show the randomly selected collective item on the screen
+Items = function() {
+    this.x = this.collectColumn();
+    this.y = this.collectHeight();
+    this.sprite = randomItem();
+};
+
+Items.prototype.collectHeight = function() {
     var num = Math.floor(Math.random() * 4);
     return [68, 151, 234, 317][num];
 };
-var collectColumn = function() {
+
+Items.prototype.collectColumn = function() {
     var num = Math.floor(Math.random() * 4);
     return [-2, 91, 200, 301, 402][num];
 };
 
-//show the randomly selected collective item on the screen
-Items = function() {
-    this.x = collectColumn();
-    this.y = collectHeight();
-    this.sprite = randomItem();
-};
-
-Items.prototype.update = function(dt) {
-    this.x * dt;
-    this.y * dt;
-};
-
-Items.prototype.render = function() {
-    ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
-};
+Items.prototype.render = Character();
 
 var items = new Items();
 
@@ -138,16 +136,12 @@ var Player = function(x, y) {
 //var player = new Player (startX, startY);
 Player.prototype.update = function(dt) {
     //Update Player location
-    this.x * dt;
-    this.y * dt;
-    checkCollisions();
+    this.checkCollisions();
 };
 
-Player.prototype.render = function() {
-    ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
-};
+Player.prototype.render = Character();
 
-var checkCollisions = function() {
+Player.prototype.checkCollisions = function() {
     var Rectangle = function(left, top) {
         this.left = left + 35;
         this.top = top + 20;
@@ -155,7 +149,7 @@ var checkCollisions = function() {
         this.bottom = this.top + 62;
     };
 
-    function checkCollision(player, obstacle) {
+    function checkCollide(player, obstacle) {
         return !(player.left > obstacle.right ||
             player.right < obstacle.left ||
             player.top > obstacle.bottom ||
@@ -167,7 +161,7 @@ var checkCollisions = function() {
     // Check collision with enemies
     for (i = 0; i < allEnemies.length; i++) {
         enemyRectangle = new Rectangle(allEnemies[i].x, allEnemies[i].y);
-        if (checkCollision(playerRectangle, enemyRectangle)) {
+        if (checkCollide(playerRectangle, enemyRectangle)) {
             player.reset();
         }
     }
@@ -178,21 +172,18 @@ var checkCollisions = function() {
     }
     */
     var itemsRectangle = new Rectangle(items.x, items.y);
-    if (checkCollision(playerRectangle, itemsRectangle)) {
+    if (checkCollide(playerRectangle, itemsRectangle)) {
         //Enemy.prototype.reset();
         if (items.sprite == "images/Heart.png") {
-            console.log("heart!");
             lives += 1;
             document.getElementById("livesleft").innerHTML = lives.toString();
             items.reset();
 
         } else if (items.sprite == "images/Star.png") {
-            console.log("Star!");
             items.reset();
             score += 100;
             document.getElementById("score").innerHTML = score.toString();
         } else if (items.sprite == "images/Gem Blue.png") {
-            console.log("Gem!");
             items.reset();
             score += 10;
             document.getElementById("score").innerHTML = score.toString();
@@ -203,31 +194,31 @@ var checkCollisions = function() {
 };
 
 Player.prototype.handleInput = function(allowedKeys) {
-    var increaseX = 101;
-    var increaseY = 83;
+    var INCREASEX = 101;
+    var INCREASEY = 83;
 
     switch (allowedKeys) {
         case "left":
             if (this.x > 0) {
-                this.x -= increaseX;
+                this.x -= INCREASEX;
             }
             break;
 
         case "up":
             if (this.y > 0) {
-                this.y -= increaseY;
+                this.y -= INCREASEY;
             }
             break;
 
         case "right":
             if (this.x < 402) {
-                this.x += increaseX;
+                this.x += INCREASEX;
             }
             break;
 
         case "down":
             if (this.y < 400) {
-                this.y += increaseY;
+                this.y += INCREASEY;
             }
             break;
     }
@@ -251,3 +242,4 @@ document.addEventListener('keyup', function(e) {
 
     player.handleInput(allowedKeys[e.keyCode]);
 });
+
