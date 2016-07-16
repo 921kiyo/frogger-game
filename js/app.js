@@ -172,7 +172,7 @@ Player.prototype.checkCollisions = function() {
     for (i = 0; i < allEnemies.length; i++) {
         enemyRectangle = new Rectangle(allEnemies[i].x, allEnemies[i].y);
         if (checkCollide(playerRectangle, enemyRectangle)) {
-            player.reset();
+            this.reset();
         }
     }
     /*
