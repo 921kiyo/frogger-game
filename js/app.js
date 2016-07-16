@@ -1,3 +1,4 @@
+
 var allEnemies,
     lives,
     score,
@@ -166,7 +167,7 @@ Player.prototype.checkCollisions = function() {
         );
     }
 
-    var playerRectangle = new Rectangle(player.x, player.y);
+    var playerRectangle = new Rectangle(this.x, this.y);
     // Check collision with enemies
     for (i = 0; i < allEnemies.length; i++) {
         enemyRectangle = new Rectangle(allEnemies[i].x, allEnemies[i].y);
